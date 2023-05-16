@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f8f8f8;
+        }
+        #summary_table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        #summary_table th, #summary_table td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            font-size: 18px;
+        }
+        #summary_table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        #summary_table th {
+            padding-top: 20px;
+            padding-bottom: 20px;
+            text-align: left;
+            background-color: #FFD700;
+            color: black;
+        }
+        #summary_table .number {
+            width: 50px;
+        }
+        #conversation_summary, #discrepancies {
+            margin-top: 50px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            background-color: #ffffff;
+            font-size: 18px;
+        }
+        h2 {
+            font-size: 24px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Conversation Summary</h1>
+    <table id="summary_table">
+        <tr>
+            <th class="number">ID</th>
+            <th>Question</th>
+            <th>Answer</th>
+            <th>Chatbot Conversation</th>
+        </tr>
+    </table>
+    <h2>Summary of Conversation</h2>
+    <div id="conversation_summary"></div>
+    <h2>Detected Discrepancies</h2>
+    <div id="discrepancies"></div>
+    <script src="/static/summary.js"></script>
+</body>
+</html>

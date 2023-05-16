@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #app {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        #chat_window, #question_window {
+            width: 100%;
+            border: none;
+            height: 300px;
+            margin-bottom: 15px;
+            overflow: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 18px;
+            text-align: center; /* center text */
+        }
+        .input-group {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #user_input {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 18px;
+        }
+        #send_btn {
+            width: 25%;
+            margin-left: 5%;
+            padding: 10px;
+            background-color: #FFD700;
+            color: black;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        #send_btn:hover {
+            background-color: #FFAA00;
+        }
+        .answer {
+            margin: 5px;
+            padding: 10px 20px;
+            background-color: #FFD700;
+            color: black;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .answer:hover {
+            background-color: #FFAA00;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="question_window">
+            <p id="question"></p>
+            <div class="answer-group">
+                <button class="answer" value="A">A</button>
+                <button class="answer" value="B">B</button>
+                <button class="answer" value="C">C</button>
+                <button class="answer" value="D">D</button>
+            </div>
+        </div>
+        <div id="chat_window"></div>
+        <div id="completion_message" style="display: none;">
+            All questions answered. Data has been saved.
+        </div>
+        <div class="input-group">
+            <input id="user_input" type="text">
+            <button id="send_btn">Send</button>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='chat.js') }}"></script> <!-- JavaScript file -->
+</body>
+</html>
