@@ -1,11 +1,14 @@
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 import openai
+import json
+#langchain imports
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.llms import OpenAI
 from langchain.chains import ConversationChain
-import openai
-import json
+from langchain.chat_models import ChatOpenAI
+from langchain.schema import SystemMessage, HumanMessage
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # Use SQLite database 'site.db'
@@ -34,30 +37,43 @@ with open('openai_api.txt', 'r') as file:
 
 openai.api_key = openai_key
 
-with open('prompts.json') as f:
+# Load the prompts.json file into a Python dictionary
+with open('prompts.json', 'r') as f:
     prompts = json.load(f)
+
+# Convert the list of prompts into a dictionary
+prompts_dict = {prompt['question_number']: prompt['system'] for prompt in prompts}
+
 
 # Initialize a ConversationChain with ConversationBufferWindowMemory
 memory = ConversationBufferWindowMemory(k=3)
-llm = OpenAI(temperature=0.5, openai_api_key=openai_key)
+llm = ChatOpenAI(temperature=0.1, openai_api_key=openai_key)
 chain = ConversationChain(llm=llm, memory=memory)
 
 @app.route('/chat', methods=['POST'])
 def chat():
     data = request.get_json()
     message = data['message']
-    question_number = data['questionNumber']
+    question_number = data['questionNumber'] + 1
+    system_message_content = prompts_dict[question_number]
+
+    # Add the system message and user's message to the conversation
+    system_message = SystemMessage(content=system_message_content)
+    user_message = HumanMessage(content=message)
+    messages = [system_message, user_message]
 
     # Call GPT-3.5 and get the response
-    response = chain.predict(input=message)
+    response = llm(messages)
 
-    # Save the user's message and the chatbot's response in the database
-    user_response = UserResponse(question=prompts[question_number]['system'], answer=message, conversation=json.dumps(chain.memory.load_memory_variables({})))
+    # Save the user's message, the chatbot's response and the entire conversation in the database
+    conversation = [{'role': msg.role, 'content': msg.content} for msg in chain.memory.load_memory_variables({}).get('messages', [])]
+    user_response = UserResponse(question=system_message_content, answer=message, conversation=json.dumps(conversation))
     db.session.add(user_response)
     db.session.commit()
 
     # Return the chatbot's response
-    return response
+    return response.content
+
 
 @app.route('/get_conversation', methods=['GET'])
 def get_conversation():
