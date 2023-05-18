@@ -11,7 +11,19 @@ fetch('/get_conversation')
             let cell3 = row.insertCell();
             cell3.innerText = data[i].answer;
             let cell4 = row.insertCell();
-            cell4.innerText = data[i].chatbot_conversation;
+            let conversation = JSON.parse(data[i].chatbot_conversation);
+            let conversationDiv = document.createElement('div');
+            for (let j = 0; j < conversation.length; j++) {
+                let userSpan = document.createElement('span');
+                userSpan.className = 'user';
+                userSpan.innerText = 'User: ' + conversation[j][0];
+                let botSpan = document.createElement('span');
+                botSpan.className = 'bot';
+                botSpan.innerText = 'Chatbot: ' + conversation[j][1];
+                conversationDiv.appendChild(userSpan);
+                conversationDiv.appendChild(botSpan);
+            }
+            cell4.appendChild(conversationDiv);
         }
         document.getElementById('conversation_summary').innerText = data.conversation_summary;
         document.getElementById('discrepancies').innerText = data.discrepancies;

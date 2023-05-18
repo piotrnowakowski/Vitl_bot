@@ -3,11 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 import openai
 import json
 #langchain imports
-from langchain.memory import ConversationBufferWindowMemory
-from langchain.llms import OpenAI
-from langchain.chains import ConversationChain
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import SystemMessage, HumanMessage
+from langchain import PromptTemplate
+
 
 
 app = Flask(__name__)
@@ -24,14 +23,6 @@ class UserResponse(db.Model):
 def home():
     return render_template('home.html')
 
-@app.route('/save_message', methods=['POST'])
-def save_message():
-    data = request.get_json()
-    user_response = UserResponse(question=data['question'], answer=data['answer'])
-    db.session.add(user_response)
-    db.session.commit()
-    return 'Response saved'
-
 with open('openai_api.txt', 'r') as file:
     openai_key = file.read().strip()
 
@@ -45,13 +36,26 @@ with open('prompts.json', 'r') as f:
 prompts_dict = {prompt['question_number']: prompt['system'] for prompt in prompts}
 
 
-# Initialize a ConversationChain with ConversationBufferWindowMemory
-memory = ConversationBufferWindowMemory(k=3)
 llm = ChatOpenAI(temperature=0.1, openai_api_key=openai_key)
-chain = ConversationChain(llm=llm, memory=memory)
+global messages
+messages = []
+
+@app.route('/save_message', methods=['POST'])
+def save_message():
+    global messages
+    data = request.get_json()
+    question = data['question']
+    answer = data['answer']  # Assuming 'answer' is now part of the request to this endpoint
+    user_response = UserResponse(question=question, answer=answer, conversation=json.dumps(messages))
+    db.session.add(user_response)
+    db.session.commit()
+    messages = []
+
+    return 'Response saved'
 
 @app.route('/chat', methods=['POST'])
 def chat():
+    global messages
     data = request.get_json()
     message = data['message']
     question_number = data['questionNumber'] + 1
@@ -60,19 +64,22 @@ def chat():
     # Add the system message and user's message to the conversation
     system_message = SystemMessage(content=system_message_content)
     user_message = HumanMessage(content=message)
-    messages = [system_message, user_message]
+    messages_temp = [system_message, user_message]
 
     # Call GPT-3.5 and get the response
-    response = llm(messages)
-
-    # Save the user's message, the chatbot's response and the entire conversation in the database
-    conversation = [{'role': msg.role, 'content': msg.content} for msg in chain.memory.load_memory_variables({}).get('messages', [])]
-    user_response = UserResponse(question=system_message_content, answer=message, conversation=json.dumps(conversation))
-    db.session.add(user_response)
-    db.session.commit()
+    response = llm(messages_temp)
+    messages.append([message, response.content])
 
     # Return the chatbot's response
     return response.content
+
+
+from langchain import ChatOpenAI, PromptTemplate
+
+def summarize_conversation(conversation, llm):
+    template = PromptTemplate("Please summarize the following conversation: {conversation}")
+    summary = llm.complete(template=template, conversation=conversation, max_tokens=100)
+    return summary
 
 
 @app.route('/get_conversation', methods=['GET'])

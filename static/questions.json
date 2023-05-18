@@ -1,81 +1,81 @@
 [
     {
+        "question_number": 1,
         "question": "What is your biological sex?",
         "answers": ["Male", "Female"]
     },
     {
+        "question_number": 2,
         "question": "How old are you?",
         "answers": ["18-24", "25-34", "35-44", "45+"]
     },
     {
+        "question_number": 3,
         "question": "When it comes to vitamin and nutrition You are?",
         "answers": ["Expert", "Beginner", "Interested", "Skeptical"]
     },
     {
+        "question_number": 4,
         "question": "Do You take vitamins?",
         "answers": ["Yes", "No", "Never taken any"]
     },
     {
+        "question_number": 5,
         "question": "Do any of these dietary considerations apply to you?",
         "answers": ["Vegan", "Vegetarian", "Pescetarian", "None"]
     },
     {
+        "question_number": 6,
         "question": "Which area(s) are you looking to improve?",
         "answers": ["Sleep", "Energy", "Digestion", "Immunity"]
     },
     {
+        "question_number": 7,
         "question": "How many portions of fruit do you usually eat a day?",
         "answers": ["Fewer then 2", "2-5", "more then 5"]
     },
     {
+        "question_number": 8,
         "question": "Ok, and how many portions of vegetables?",
         "answers": ["Fewer then 2", "2-5", "More then 5"]
     },
     {
-        "question": "Have you recently been feeling tired or fatigued?",
-        "answers": ["Most days", "Occasionally", "Never"]
+        "question_number": 9,
+        "question": "Do you experience any of these during your sleep?",
+        "answers": ["Night sweats", "Limb jerks", "Teeth grinding", "None of these"]
     },
     {
-        "question": "Do you mostly experience this tiredness?",
-        "answers": ["Getting out of bed", "Mid morning", "post lunch"]
-    },
-    {
+        "question_number": 10,
         "question": "Do you currently suffer from?",
         "answers": ["Stress", "Low mood", "Anxiety", "None of these"]
     },
     {
+        "question_number": 11,
         "question": "How many hours do you usually sleep a night?",
         "answers": ["Fewer than 7", "7 to 9", "more then 9"]
     },
     {
+        "question_number": 12,
         "question": "Recently, do you tend to find that you?",
         "answers": ["Can't fall asleep", "Wake up a lot", "get insomnia", "None of these"]
     },
     {
+        "question_number": 13,
         "question": "And at night, do you experience any of these?",
         "answers": ["Night sweats", "Limb jerks", "teeth grinding", "None of these"]
     },
     {
-        "question": "How often do you exercise each week? (30 mins or more)",
-        "answers": ["Hardly ever", "1-4 days", "5+days"]
-    },
-    {
+        "question_number": 14,
         "question": "What sort of exercise do you tend to do?",
         "answers": ["Cardio", "Strength", "Core", "None"]
     },
     {
+        "question_number": 15,
         "question": "Would you like to improve... ?",
         "answers": ["Body fat", "Strength", "Endurance", "Recovery", "None of these"]
     },
     {
-        "question": "How often have you been getting out in the sunshine recently?",
-        "answers": ["Rarely", "Some days", "All the time"]
-    },
-    {
-        "question": "Do you suffer from a genetic, incurable or chronic condition?",
-        "answers": ["yes", "no"]
-    },
-    {
+        "question_number": 16,
         "question": "Would you be interested in taking a DNA test?",
         "answers": ["Yes", "No", "Already taken one"]
     }

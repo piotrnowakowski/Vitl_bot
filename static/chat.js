@@ -26,6 +26,9 @@ fetch('/static/questions.json')
             // Save the answer to the server
             saveAnswerToServer(question, answer);
     
+            // Clear the chat window
+            document.getElementById('chat_window').innerHTML = '';
+    
             // Move to the next question
             currentQuestion++;
     
