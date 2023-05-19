@@ -3,10 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 import openai
 import json
 #langchain imports
+from langchain.memory import ConversationBufferWindowMemory
+from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import SystemMessage, HumanMessage
-from langchain import PromptTemplate
-
 
 
 app = Flask(__name__)
@@ -74,12 +74,7 @@ def chat():
     return response.content
 
 
-from langchain import ChatOpenAI, PromptTemplate
 
-def summarize_conversation(conversation, llm):
-    template = PromptTemplate("Please summarize the following conversation: {conversation}")
-    summary = llm.complete(template=template, conversation=conversation, max_tokens=100)
-    return summary
 
 
 @app.route('/get_conversation', methods=['GET'])
