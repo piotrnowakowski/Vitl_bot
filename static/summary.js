@@ -2,7 +2,7 @@ fetch('/get_conversation')
     .then(response => response.json())
     .then(data => {
         let table = document.getElementById('summary_table');
-        for(let i = 0; i < data.length - 1; i++) {  // Loop to data.length - 1 because the last object is the summary and discrepancies
+        for(let i = 0; i < data.length - 1; i++) {
             let row = table.insertRow();
             let cell1 = row.insertCell();
             cell1.innerText = data[i].id;
@@ -24,8 +24,8 @@ fetch('/get_conversation')
                 conversationDiv.appendChild(botSpan);
             }
             cell4.appendChild(conversationDiv);
+            let cell5 = row.insertCell();
+            cell5.innerText = data[i].discrepancies;
         }
-        // Fetch the conversation_summary and discrepancies from the last element of the data array
         document.getElementById('conversation_summary').innerText = data[data.length - 1].conversation_summary;
-        document.getElementById('discrepancies').innerText = data[data.length - 1].discrepancies;
     });
