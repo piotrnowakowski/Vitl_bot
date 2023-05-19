@@ -7,7 +7,7 @@ from langchain.memory import ConversationBufferWindowMemory
 from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import SystemMessage, HumanMessage
-
+from langchain.prompts.chat import HumanMessagePromptTemplate, ChatPromptTemplate
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # Use SQLite database 'site.db'
@@ -74,7 +74,13 @@ def chat():
     return response.content
 
 
-
+def summarize_conversation(conversation, llm):
+    prompt = """Please summarize the following conversation with a focus on vitamins intake, meal behaviours and anything regarding tailoring a vitamin to a specific user needs: {input}"""
+    human_template = HumanMessagePromptTemplate.from_template(template=prompt)
+    chat_prompt = ChatPromptTemplate.from_messages([human_template])
+    chat_prompt_value = chat_prompt.format_prompt(input=conversation)
+    summary = llm([chat_prompt_value.to_messages()[0]])
+    return summary.content
 
 
 @app.route('/get_conversation', methods=['GET'])
@@ -88,11 +94,15 @@ def get_conversation():
             'answer': conversation.answer,
             'chatbot_conversation': conversation.conversation
         })
-    # Fetch conversation summary and detected discrepancies from OpenAI's API here
-    # and append them to the response
+    # Generate a single string that contains the whole conversation
+    entire_conversation = " ".join([conv['chatbot_conversation'] for conv in response])
+    
+    # Call the summarization function
+    summary = summarize_conversation(entire_conversation, llm)
+
     response.append({
-        'conversation_summary': 'TODO',  # Replace 'TODO' with the conversation summary fetched from OpenAI's API
-        'discrepancies': 'TODO'  # Replace 'TODO' with the detected discrepancies fetched from OpenAI's API
+        'conversation_summary': summary, 
+        'discrepancies': 'TODO'  #TODO do this with the detected discrepancies fetched from OpenAI's API
     })
     return json.dumps(response)
 
