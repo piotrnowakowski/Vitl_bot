@@ -18,6 +18,7 @@ class UserResponse(db.Model):
     question = db.Column(db.String(200), nullable=False)
     answer = db.Column(db.String(200), nullable=False)
     conversation = db.Column(db.String(500), nullable=True)
+    discrepancies = db.Column(db.String(500), nullable=True)
 
 @app.route('/')
 def home():
@@ -40,13 +41,25 @@ llm = ChatOpenAI(temperature=0.1, openai_api_key=openai_key)
 global messages
 messages = []
 
+def detect_discrepancies(question, response, conversation, llm):
+    prompt = """Name any differences between how user answer to this question-{question} user_answer-{user_answer}, and what he told bot in the conversation - {conversation}. You need to focus on nutritional needs, gender indentity, hormon uptakes or vitamin needs or uptake by the user. The goal is to get as good overview of person nutricial needs in aftermath so list anything that is important"""
+    human_template = HumanMessagePromptTemplate.from_template(template=prompt)
+    chat_prompt = ChatPromptTemplate.from_messages([human_template])
+    chat_prompt_value = chat_prompt.format_prompt(question=question, user_answer=response, conversation=conversation)
+    summary = llm([chat_prompt_value.to_messages()[0]])
+    return summary.content
+
 @app.route('/save_message', methods=['POST'])
 def save_message():
     global messages
     data = request.get_json()
     question = data['question']
-    answer = data['answer']  # Assuming 'answer' is now part of the request to this endpoint
-    user_response = UserResponse(question=question, answer=answer, conversation=json.dumps(messages))
+    answer = data['answer']
+    if messages:
+        discrepancies = detect_discrepancies(question, answer, json.dumps(messages), llm)
+    else:
+        discrepancies = None
+    user_response = UserResponse(question=question, answer=answer, conversation=json.dumps(messages), discrepancies=discrepancies)
     db.session.add(user_response)
     db.session.commit()
     messages = []
@@ -83,6 +96,7 @@ def summarize_conversation(conversation, llm):
     return summary.content
 
 
+
 @app.route('/get_conversation', methods=['GET'])
 def get_conversation():
     all_conversations = UserResponse.query.all()
@@ -92,17 +106,15 @@ def get_conversation():
             'id': conversation.id,
             'question': conversation.question,
             'answer': conversation.answer,
-            'chatbot_conversation': conversation.conversation
+            'chatbot_conversation': conversation.conversation,
+            'discrepancies': conversation.discrepancies
         })
     # Generate a single string that contains the whole conversation
     entire_conversation = " ".join([conv['chatbot_conversation'] for conv in response])
-    
     # Call the summarization function
     summary = summarize_conversation(entire_conversation, llm)
-
     response.append({
-        'conversation_summary': summary, 
-        'discrepancies': 'TODO'  #TODO do this with the detected discrepancies fetched from OpenAI's API
+        'conversation_summary': summary,
     })
     return json.dumps(response)
 
